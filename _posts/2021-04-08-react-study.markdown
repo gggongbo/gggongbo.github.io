@@ -1,3 +1,11 @@
+---
+layout: post
+title:  "React Study"
+date:   2021-04-08 13:40:30 +0530
+categories: Javascript NodeJS
+---
+<br>
+
 # React       
 ## 1. 리액트 개념
 * 리액트가 등장하게 된 배경 / 동작 방식
