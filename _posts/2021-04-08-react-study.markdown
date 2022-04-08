@@ -21,15 +21,17 @@ categories: Javascript NodeJS
     - 렌더링 : render() 함수가 호출된다는 의미임 (virtudal dom에 한번 그려줌)     
        
 ## 2. 리액트 프로젝트 구조   
-    * node_modules : creat-react-app 구성하는 모든 패킷지 소스 코드가 존재
-    * package.json : creat-react-app 기본 패키지 외 추가로 설치된 라이브러리/패키지 정보 기록 (모든 패키지마다 존재)
-    * package-lock.json : 프로그래머가 관리할 필요가 없고 npm 이나 yarn이 알아서 관리해주는 파일들(lock파일은 해당 프로젝트에 설치한 패키지 , 그패키지와 관련된 모든 패키지의 버전정보를 포함)
-    * public
+  * node_modules : creat-react-app 구성하는 모든 패킷지 소스 코드가 존재
+   package.json : creat-react-app 기본 패키지 외 추가로 설치된 *라이브러리/패키지 정보 기록 (모든 패키지마다 존재)
+  * package-lock.json : 프로그래머가 관리할 필요가 없고 npm 이나 yarn이 알아서 관리해주는 파일들(lock파일은 해당 프로젝트에 설치한 패키지 , 그패키지와 관련된 모든 패키지의 버전정보를 포함)
+  * public
     - 가상 DOM을 위한 html파일 (빈 껍데기 파일) / CRA를 배포했을 때 실제 서버에 배포되는 디렉토리(<div id="root"><div>/index.html 포함)
     - mock date 관리하는 data 폴더 위치
-    * src
-    - React의 시작(index.js 포함)
-    - ReactDOM.render(<App />, document.getElementById('root'))
+  * src
+    - index.js : React 플젝의 시작점
+    ```
+    ReactDOM.render(<App />, document.getElementById('root'))
+    ```
     - ReactDOM.render 함수의 인자는 두개이다. 첫 번째 인자는 화면에 보여주고 싶은 컴포넌트, 두 번째 인자는 화면에 보여주고 싶은 컴포넌트의 위치
     - assets : 미디어 파일
     - components : 공통 컴포넌트 관리(header, footer, nav)
@@ -40,7 +42,7 @@ categories: Javascript NodeJS
     - context : context API로 프로젝트를 작업하는 경우 관련 API 저장
     - hoc : 함수형 컴포넌트를 사용하면서 커스텀 훅을 모듈화하여 담아놓는 폴더
     - store : 리덕스 사용시 관련 데이터 저장
-    * App.js 
+  * App.js 
     - 현재 화면에 보여지는 초기 컴포넌트
 
 ## 3. 리액트 문법
