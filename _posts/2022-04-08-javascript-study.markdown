@@ -567,20 +567,193 @@ categories: Javascript NodeJS
 ## 라우팅
 
 1. 개념
-   - 출발지에서 목적지까지의 경로를 결정하는 기능
-   - 사용자가 요청한 url 또는 이벤트를 해석하고 새로운 페이지로 전환하기 위해 필요한 데이터를 서버에 요청하고 페이지 전환하는 행위
-   - 브라우저 화면 전환 케이스
-     - 주소창에 url 입력
-     - 웹페이지의 링크 클릭
-     - 뒤로가기/앞으로가기(history 변경)
+
+- 출발지에서 목적지까지의 경로를 결정하는 기능
+- 사용자가 요청한 url 또는 이벤트를 해석하고 새로운 페이지로 전환하기 위해 필요한 데이터를 서버에 요청하고 페이지 전환하는 행위
+- 브라우저 화면 전환 케이스
+  - 주소창에 url 입력
+  - 웹페이지의 링크 클릭
+  - 뒤로가기/앞으로가기(history 변경)
 
 ## 클래스
+
+1.  개념
+
+- ES6의 클래스. 일종의 함수라 볼 수 있으나 클래스, 생성자 함수는 동일하게 동작하지 않음
+
+2. 클래스 정의
+
+- class 키워드 사용하여 정의
+- 표현식으로도 정의 가능(함수 표현식과 동일하게 클래스/함수 표현식에서 사용한 클래스/함수 일므은 외부 코드에서 접근 불가)
+
+  ```
+  class Person {
+     constructor(name) {
+        this._name = name; // 파스칼 케이스 사용. 사용하지 않아도 에러 발생하지 않음
+     }
+
+     sayHi() {
+        console.log(`Hi! ${this._name}`);
+     }
+  }
+
+  const me = new Person('Lee');
+  me.sayHi();
+
+  const Foo = class MyClass {};
+  const foo = new Foo();
+  new MyClass(); //Reference Error 발생
+  ```
+
+3. 클래스 특징
+
+- 선언문 이전에 참조 불가
+- let, const 키워드로 선언된 변수처럼 호이스팅되나, 클래스 선언문 이전에 일시적 사각지대에 빠져서 참조 불가
+
+4. 인스턴스 생성
+
+- new 연산자로 클래스 이름 호출하는 형식으로 진행
+- 이때 new 연산자와 함께 호출한 Foo는 클래스의 이름이 아니라 생성자
+- new 연산자를 사용하지 않으면 type error 발생
+
+5. 클래스 필드
+
+- 클래스 내부의 캡슐화된 변수, 데이터 멤버 또는 멤버 변수라고 부름
+- 인스턴스의 프로퍼티 또는 정적 프로퍼티가 될 수 있음
+- 자바스크립트의 생성자 함수에서 this에 추가한 프로퍼티를 클래스 필드라고 부름
+
+6. constructor
+
+- 인스턴스를 생성하고 클래스 필드를 초기화하기 위한 특수한 메소드
+- 클래스 내에 한 개만 존재. 2개 이상의 constructor를 포함하면 문법 에러 발생
+- 생략 가능. 생략시 constructor(){} 포함한 것처럼 동작
+- 인스턴스 생성과 동시에 클래스 필드 생성,초기화 실행
+- 클래스 body에는 메소드만 선언 가능. body에 클래스 필드 선언하면 문법 에러 발생 (최신 브라우저, 최신 노드에서는 에러 발생 안함)
+- this와 바인딩 되는 클래스 필드는 인스턴스의 프로퍼티가 됨. 클래스 외부에서 접근 가능(public)
+  ```
+  class Foo {
+     name = ''; //에러 발생
+     constructor(){}
+  }
+  ```
+
+7. getter
+
+- 메소드 이름 앞에 get 키워드를 사용해 정의. 메소드 이름은 클래스 필드 이름처럼 사용. 반드시 무언가를 반환해야 함. 접근자 프로퍼티(프로토타입의 프로퍼티)
+
+```
+class Foo {
+   constructor(arr= []){
+      this._arr = arr;
+   }
+
+   get firstElem() {
+      return this._arr.length ? this._arr[0] : null;
+   }
+}
+
+const foo = new Foo([1,2]);
+
+console.log(foo.firstElem); // 메소드 호출하는 것보다는.. 프로퍼티 호출하는 것 같죠? 결과값은 1임
+```
+
+8. setter
+
+- 메소드 이름 앞에 set 키워드를 사용해 정의. 메소드 이름은 클래스 필드 이름처럼 사용. 접근자 프로퍼티(프로토타입의 프로퍼티)
+
+```
+class Foo {
+      constructor(arr=[]){
+         this._arr = arr;
+      }
+
+      set firtElem(elem) {
+         //spread 문법 사용해서 배열 변환
+         this._arr = [elem, ...this.arr];
+      }
+}
+
+const foo = new Foo([1,2]);
+
+foo.firstElem = 100; //setter 호출
+```
+
+9. 정적 메소드
+
+- static 키워드로 정적 메소드 정의. 클래스 이름으로 호출되며, 인스턴스 생성하지 않아도 호출 가능.
+- 일반 메소드의 내부에서 this는 클래스의 인스턴스를 가리킴. 정적 메소드는 인스턴스로 호출할 수 없어 this 사용 불가
+
+```
+//정적 메소드
+class Foo {
+   constructor(prop){
+      this.prop = prop;
+   }
+
+   static staticMethod() {
+      return 'staticMethod';
+   }
+
+   prototypeMethod() {
+      return this.prop;
+   }
+}
+
+console.log(Foo.staticMethod());
+const foo = new Foo(123);
+console.log(foo.prototypeMethod()); //123
+
+//정적 메소드 호출시 에러 발생
+console.log(foo.staticMethod()); //Uncaught type err : foo.staticMethod is not a function
+
+//es5 문법
+
+var Foo = (function(){
+   function Foo(prop){
+      this.prop = prop;
+   }
+
+   Foo.staticMethod = function () {
+      return 'staticMethod';
+   };
+
+   Foo.prototype.prototypeMethod = function (){
+      return this.prop;
+   };
+
+   return Foo;
+}());
+
+var foo = new Foo(123);
+console.log(foo.prototypeMethod()); //123
+console.log(Foo.staticMethod());
+console.log(foo.staticMethod()); //type error 발생
+```
+
+- 함수 객체만이 가지는 prototyp 프로퍼티는 함수 객체가 생성자로 사용될 때, 이 함수를 통해 생성된 객체의 부모 역할을 하는 프로토타입 객체를 가리킴
+- 생성자 함수 Foo의 prototype 프로퍼티가 가리키는 프로토타입 객체는 생성자 함수 Foo를 통해 생성되는 인스턴스 foo의 부모역할을 함
+- 생성자함수 Food의 prototype 프로퍼티가 가리키는 프로토타입 객체가 갖고있는 constructor 프로퍼티는 생성자 함수 Foo를 가리킴
+- 정적 메소드는 생성자 함수 Foo의 메소드이고, 일반 메소드인 prototypeMethod는 프로토타입 객체 Foo.prototype의 메소드. 그래서 인스턴스인 food에서 정적 메소드 호출 X
+
+10. 클래스 상속
+
+- extends 키워드 사용
+- 자식 클래스의 인스턴스는 프로토타입 체인에 의해 부모클래스의 메소드 사용이 가능
+- 오버라이딩(상위 클래스가 갖는 메소드 하위 클래스가 재정의) 사용 가능
+- cf. 오버로딩(매개변수 타입/갯수가 다른 같은 이름 메소드 구현/호출)은 자바스크립트는 지원하지 않지만 argument 객체 사용하여 구현은 가능)
+- super 키워드는 부모 클래스 참조 혹은 부모 클래스의 constructor 호출할 때 사용
+- super 메소드 : 자식 클래스 constuctor 내부에서 부모 클래스 constructor 호출. 자식 클래스의 constructor에서 super()를 호출하지 않으면 this에 대한 참조 에러 발생
+- super 키워드는 부모 클래스(Base Class)에 대한 참조 시에도 사용
+- 자식클래스의 [[Prototype]] 내부 슬롯이 가리키는 프로토타입 객체는 부모 클래스
+- 자식클래스는 프로토타입 체인에 의해 부모 클래스의 정적 메소드 참조가 가능(Classname.정적메소드(), 자식클래스 정적 메소드 내부에서 부모의 정적 메소드 호출 가능)
+- 자식클래스의 일반 메소드 내부에서는 부모 클래스의 정적 메소드를 호출할 수 없음(인스턴스의 프로토타입 체인으로 부모 클래스의 정적 메소드 참조 불가)
 
 ## 프로미스
 
 1. 개념
-   - 비동기 처리를 위한 패턴 : 콜백 함수
-   - 비동기 처리를 위한 똘다른 패턴, 전통적인 콜백 패턴이 가진 단점을 보완하며 비동기 처리 시점을 명확하게 표현할 수 있음
+
+- 비동기 처리를 위한 패턴 : 콜백 함수
+- 비동기 처리를 위한 똘다른 패턴, 전통적인 콜백 패턴이 가진 단점을 보완하며 비동기 처리 시점을 명확하게 표현할 수 있음
 
 ## 구조분해할당(비구조화할당)
 
@@ -660,3 +833,7 @@ categories: Javascript NodeJS
         실행 명령어
      }
      ```
+
+```
+
+```
