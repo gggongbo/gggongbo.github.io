@@ -87,11 +87,12 @@ categories: Javascript NodeJS
 
    6. 변수 호이스팅
       - 모든 선언문은 호이스팅(Hoisting)됨
-      - 호이스팅이란 var 선언문이나 function 선언문 등 모든 선언문이 해당 Scope의 선두로 옮겨진 것처럼 동작하는 특성을 말한다. 즉, 자바스크립트는 모든 선언문(var, let, const, function, function\*, class)이 선언되기 이전에 참조 가능하다.
+      - 호이스팅이란 var 선언문이나 function 선언문 등 모든 선언문이 해당 Scope의 선두로 옮겨진 것처럼 동작하는 특성을 말한다. 즉, 자바스크립트는 모든 선언문(var, let, const, function, function, class)이 선언되기 이전에 참조 가능하다.
 
 3. 제어문
 
-   - for–in 문은 객체의 프로퍼티를 순회하기 위해 사용하고(순서없)) for–of 문은 배열의 요소를 순회하기 위해 사용한다.
+   - for–in 문은 객체의 프로퍼티를 순회하기 위해 사용(순서없))
+   - for–of 문은 배열의 요소를 순회하기 위해 사용한다.
 
 4. 함수
 
@@ -112,10 +113,10 @@ categories: Javascript NodeJS
 
    - 함수 선언문으로 함수가 정의되기 이전에 함수 호출이 가능
    - 함수 선언문의 경우, 함수 선언의 위치와는 상관없이 코드 내 어느 곳에서든지 호출이 가능한데 이것을 함수 호이스팅(Function Hoisting)
-   - 자바스크립트는 ES6의 let, const를 포함하여 모든 선언(var, let, const, function, function\*, class)을 호이스팅(Hoisting)한다.
+   - 자바스크립트는 ES6의 let, const를 포함하여 모든 선언(var, let, const, function, function, class)을 호이스팅(Hoisting)한다.
    - 함수 선언문 이용 시 함수 호이스팅 발생
    - 스크립트 로딩 시점에 변수 객체에 함수 할당
-   - 호이스팅이란 var 선언문이나 function 선언문 등 모든 선언문이 해당 Scope의 선두로 옮겨진 것처럼 동작하는 특성을 말한다. 즉, 자바스크립트는 모든 선언문(var, let, const, function, function\*, class)이 선언되기 이전에 참조 가능하다.
+   - 호이스팅이란 var 선언문이나 function 선언문 등 모든 선언문이 해당 Scope의 선두로 옮겨진 것처럼 동작하는 특성을 말한다. 즉, 자바스크립트는 모든 선언문(var, let, const, function, function, class)이 선언되기 이전에 참조 가능하다.
    - 함수 호이스팅 != 변수호이스팅
    - var test = function(){}; 와 같은 함수 표현식이면 변수 호이스팅 발생(호이스팅시 undefined로 초기화, 실제 값 할당은 할당문에서 발생)
    - 변수 호이스팅은 runtime에 해석/실행
@@ -144,7 +145,7 @@ categories: Javascript NodeJS
 
    - 객체형(참조형) 인수는 Call-by-reference(참조에 의한 호출)로 동작
    - 함수 호출 시 참조 타입 인수를 함수에 매개변수로 전달할 때 매개변수에 값이 복사되지 않고 객체의 참조값이 매개변수에 저장되어 함수로 전달되는 방식
-   - 함수 내에서 매개변수의 참조값이 이용하여 객체의 값을 변경했을 때 전달되어진 참조형의 인수값도 같이 변경
+   - 함수 내에서 매개변수의 참조값을 이용하여 객체의 값을 변경했을 때 전달되어진 참조형의 인수값도 같이 변경
 
    8. return
 
@@ -157,7 +158,7 @@ categories: Javascript NodeJS
    - caller : 자신을 호출한 함수
    - length : 함수 정의 시 작성된 매개변수 갯수
    - name : 함수명. 익명함수이면 빈문자열을 값으로 가짐
-   - **proto** :[[Prototype]] 내부 슬롯이 가리키는 프로토타입 객체에 접근하기 위해 사용하는 접근자 프로퍼티. 객체의 입장에서 자신의 부모 역할을 하는 프로토타입 객체를 가리키며 함수 객체의 경우 Function.prototype를 가리킨다
+   - \_\_ proto \_\_ :[[Prototype]] 내부 슬롯이 가리키는 프로토타입 객체에 접근하기 위해 사용하는 접근자 프로퍼티. 객체의 입장에서 자신의 부모 역할을 하는 프로토타입 객체를 가리키며 함수 객체의 경우 Function.prototype를 가리킨다
    - prototype : 함수 객체만이 소유하는 프로퍼티. 함수가 객체를 생성하는 생성자 함수로 사용될 때, 생성자 함수가 생성한 인스턴스의 프로토타입 객체
 
    10. 함수의 종류
@@ -205,6 +206,7 @@ categories: Javascript NodeJS
    - 생성자 함수가 아닌 일반 함수에 new 연산자를 붙여 호출하면 생성자 함수처럼 동작할 수 있음
    - 연산자가 들어간 표현식을 프로퍼티 키로 사용하려면 키를 대괄호로 묶어야함 like [first-name]
    - 프로퍼티는 마침표, 대괄호로 접근 가능(안의 키가 반드시 문자열이어야 함)
+   - 대괄호로 접근하는 이유 : 객체의 키로 접근할 때 key에 유효한 값이 들어가지 않았을 때, 동적으로 키를 받아올때(매개변수로 받아온 값을 사용할때)
    - 생성자 함수가 생성한 객체의 메소드는 객체의 프로퍼티 뿐만 아니라, 자신이 기억하는 렉시컬 환경의 변수에도 접근할 수 있다
 
    3. 객체 타입 동작원리
@@ -247,6 +249,72 @@ categories: Javascript NodeJS
    - 원시 타입은 객체가 아니므로 프로퍼티나 메소드를 가질수 없다
    - 하지만 원시 타입으로 프로퍼티(str.constructor)나 메소드(str.toUpperCase())를 호출할 때 원시 타입과 연관된 객체로 일시적으로 변환되어 프로토타입 객체를 공유하게 된다
    - String 객체의 예 : String 객체의 프로토타입 객체인 String.prototype에 메소드를 추가하면 원시 타입, 객체 모두 메소드를 사용할 수 있음
+
+4. Rest 파라미터
+
+   - 매개 변수 이름 아에 세 개의 점을 붙여 정의한 매개변수
+   - 함수에 전달된 인수들의 목록을 배열로 전달 받음. 먼저 선언된 파라미터에 할당된 인수를 제외한 나머지 인수들이 모두 배열로 담김.
+   - 반드시 마지막 파라미터여야 함
+   - 함수.length(함수의 매개변수 개수)에 영향을 주지 않음
+
+     ```
+     function bar(param1, param2, ...rest) {
+        console.log(param1); // 1
+        console.log(param2); // 2
+        console.log(rest); // [3,4,5]
+     }
+
+     bar(1,2,3,4,5);
+     ```
+
+5. Spread 문법
+
+   - ...으로 사용. 대상을 개별 요소로 분리. 문법의 대상이 이터러블 이어야함
+   - 어느 위치에 사용 가능
+
+     ```
+     console.log(...[1,2,3]) //1,2,3으로 분리
+
+      //es5
+     function foo(x,y,z) {
+        console.log(x); //1
+        console.log(y); //2
+        console.log(z); //3
+     }
+
+     const arr = [1,2,3];
+     foo.apply(null,arr); //2번째 인수인 배열이 1,2,3으로 분해되어 foo에 전달
+
+     //es6 spread
+     function foo(x,y,z) {
+        console.log(x); //1
+        console.log(y); //2
+        console.log(z); //3
+     }
+
+     const arr = [1,2,3];
+     foo( ...arr); // 1,2,3으로 분리되어 개별적인 인자로 각각 매개변수에 전달
+     foo(...[1,2,3]);
+
+     const arr = [1,2,3];
+     console.log([...arr,4,5,6]); //[1,2,3,4,5,6]
+
+     cosnt arr = [1,2,3];
+     const copy = [...arr]; //배열의 복사 가능
+
+     const n = {x:1, y:2, ...{a:3, b:4}}; // {x:1, y:2, a:3, b:4}
+
+     const {x,y, ...z} = n; //x=1, y=2, z = {a:3, b:4}
+
+     //객체의 병합
+     const merged = { ...{x:1, y:2}, ...{y:10, z:3} }; //{x:1, y:10, z:3}
+
+     //특정 프로퍼티 변경
+     const changed = { ...{x:1, y:2}, y:100}; //{x:1, y:100}
+
+     //프로퍼티 추가
+     const added = { ...{x:1, y:2}, z:0}; //{x:1, y:2, z:0}
+     ```
 
 ## 스코프
 
@@ -352,7 +420,7 @@ categories: Javascript NodeJS
              1. 함수 선언 처리
                 - 선언된 함수명이 VO의 프로퍼티로, 생성된 함수 객체가 값으로 설정
                 - 생성된 함수 객체는 [[Scopes]] 프로퍼티를 가짐. 함수 객체만이 소유하는 내부 프로퍼티. 함수 객체가 실행되는 환경 가리킴
-                - 내부 함수의 [[Scope]] 프로퍼티는 자신의 실행 환셩, 자신 포함하는 외부 함수의 실행 환경, 전역 객체 가리킴. 외부 함수의 실행 컨텍스트가 소멸해도 [[Scope]] 프로퍼티가 가리키는 외부 함수의 실행 환경은 소멸하지 않고 참조할 수 있음 --> 클로저
+                - 내부 함수의 [[Scope]] 프로퍼티는 자신의 실행 환경, 자신 포함하는 외부 함수의 실행 환경, 전역 객체 가리킴. 외부 함수의 실행 컨텍스트가 소멸해도 [[Scope]] 프로퍼티가 가리키는 외부 함수의 실행 환경은 소멸하지 않고 참조 가능 --> 클로저
                 - 스코프 체인이 가리키는 VO에 이미 함수가 등록되어 있으면 함수선언식 이전에 함수 호출이 가능
                 - 함수 선언식은 VO에 함수명 프로퍼티로 추가, 함수객체를 값으로 즉시 할당 --> 함수 호이스팅
                 - 함수 표현식은 일반 변수의 방식을 따른다
@@ -365,15 +433,14 @@ categories: Javascript NodeJS
                 - var 키워드로 선언시 선언 단계, 초기화 단계 한 번에 발생
                 - 변수 선언문 이전에 변수에 접근해도 VO에 변수가 있어 undefined 반환 --> 변수 호이스팅
         2. this value 결정
-           - 결정 이전에는 전여 깩체를 가리키고 있고, 함수 호출 패턴에 의해 this 할당 값 결정
+           - 결정 이전에는 전여 객체를 가리키고 있고, 함수 호출 패턴에 의해 this 할당 값 결정
         3. 전역 코드 실행
-           - 변수값 할당
-           - VO 검색해서 변수명에 해당하는 프로퍼티가 발견되면 그 값을 전역 변수에 할당해줌
+           - 변수값 할당 : 코드에서 변수 표현식 마주치는 지점. VO 검색해서 변수명에 해당하는 프로퍼티가 발견되면 그 값을 전역 변수에 할당해줌 >> VO 검색결과가 없다면 전역객체의 프로퍼티 값으로 동적 생성해주는 듯
            - 전역 코드의 함수 실행 > 새로운 함수 컨텍스트 실행
              - 순서
                1. 스코프 체인의 생성과 초기화
                   - argument 프로퍼티의 초기화
-                  - Varibla Instantiation 실행
+                  - Variable Instantiation 실행 (변수 객체화)
                   - 프로그램이 AO에 직접 접근 불가(프로퍼티 접근은 가능)
                   - Caller(전역 컨텍스트)의 스코프 체인이 참조하는 객체가 스코프체인에 push 됨
                   - AO와 전역 객체를 순차적으로 참조하게 됨
@@ -497,10 +564,99 @@ categories: Javascript NodeJS
    - prototype.filter : if문 대체 가능. 배열 순회하며 각 요소에 대해 인자로 주어진 콜백함수 실행 결과가 true인 배열 요소의 값만 추출항 새로운 배열 반환. 특정 케이스만 필터링해 새로운 배열 만들고 싶을 때 사용. 원본 배열은 변경. 두번째 인자로 this를 전달할 수 있음. 리턴값이 1이라면 true
    - prototype.reduce : 배열을 순회하며 각 요소에 대해 이전의 콜백함수 실행 반환값을 전달. 콜백함수를 실행하고 그 결과를 반환. ie 9 이상에서 정상 동작. 두번째 인수로 초기 값을 전달할 수 있다(지정안하면 배열의 0번 인덱스 값이 초기 값인듯). 빈 배열에서 호출하면 에러 발생.
 
+## 라우팅
+
+1. 개념
+   - 출발지에서 목적지까지의 경로를 결정하는 기능
+   - 사용자가 요청한 url 또는 이벤트를 해석하고 새로운 페이지로 전환하기 위해 필요한 데이터를 서버에 요청하고 페이지 전환하는 행위
+   - 브라우저 화면 전환 케이스
+     - 주소창에 url 입력
+     - 웹페이지의 링크 클릭
+     - 뒤로가기/앞으로가기(history 변경)
+
+## 클래스
+
 ## 프로미스
+
+1. 개념
+   - 비동기 처리를 위한 패턴 : 콜백 함수
+   - 비동기 처리를 위한 똘다른 패턴, 전통적인 콜백 패턴이 가진 단점을 보완하며 비동기 처리 시점을 명확하게 표현할 수 있음
 
 ## 구조분해할당(비구조화할당)
 
 1. 개념
 
 - 객체나 배열을 변수로 분해할 수 있게 하는 문법
+
+2. 배열의 비구조화 할당
+
+   - 배열 디스트럭처링을 위해서는 할당 연산자 왼쪽에 배열 형태의 변수 리스트가 필요
+   - 왼쪽의 변수 리스트와 오른쪽의 배열은 배열의 인덱스 기준으로 할당
+
+     ```
+     let [x,y,z] = [1,2,3]; //x=1, y=2, z=3
+     let [x,y] = [1]; // x=1, y=undefined
+     let [x,y] = [1,2,3]; //x=1, y=2
+     let [x, ,z] = [1,2,3]; //x=1, z=3
+
+     //디폴트값 지정
+     let [x,y=10,z=3] = [1,2] //x=1,y=2,z=3
+
+     //스프레드 문법
+     let[x, ...y] = [1,2,3]; //x=1, y=[2,3]
+
+     //Date 객체에서 년도,월,일 추출
+     const [year, month, day] = new Date().toISOString().substring(0,10).split('-');
+     ```
+
+3. 객체의 비구조화 할당
+
+   - 객체의 각 프로퍼티를 디스트럭처링하여 변수에 할당하려면 프로퍼티 키 사용 해야함
+   - 할당 기준은 프로퍼티 키이고, 할당 연산자 왼쪽에 객체 형태의 변수 리스트 필요
+   - 매개변수에서도 사용 가능
+
+     ```
+     //프로퍼티 키가 prop1(prop2)인 프로퍼티 값을 변수 p1(p2)에 할당
+     const {prop1:p1, prop2: p2} = {prop1: 'a', prop2: 'b'};
+     console.log(p1, p2);
+     console.log({prop1:p1, prop2:p2});
+
+     const {prop1, prop2} = {prop1: 'a', prop2: 'b'};
+     console.log({prop1, prop2})l // {prop1: 'a', prop2: 'b'};
+
+     //default value 설정
+     const {prop1, prop2, prop3 = 'c'} = {prop1:'a', prop2: 'b'};
+     console.log({prop1, prop2, prop3}); //{prop1: 'a', prop2: 'b', prop3: 'c'}
+
+     //배열 고차 함수에서 활용 가능
+     const todos = [
+        {id:1, content: 'HTML', completed: true},
+        {id:2, content: 'CSS", completed: false},
+        {id:3. contebt: 'JS', compelted: false}
+     ];
+
+     //todos 배열의 요소인 객체로부터 completed 프로퍼티만을 추출
+     const completedTodos = todos.filter(({completed}) => completed);
+     console.log(completedTodos); //{id:1, content: 'HTML', completed: true}
+
+     //중첩 객체에서의 사용
+
+     const person = {
+        name: 'Lee',
+        address: {
+           zipCode: '03068',
+           city: 'Seoul'
+        }
+     };
+
+     const { address : {city} } = person;
+
+     //매개 변수 사용 케이스
+     const func = ({param1, param2}) => {실행 명령어}
+
+     const func = o => {
+        var param1 = o.param1;
+        var param2 = o.param2;
+        실행 명령어
+     }
+     ```
