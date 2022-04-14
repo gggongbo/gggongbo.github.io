@@ -38,7 +38,7 @@ categories: Javascript NodeJS
 - 기존에 사용하는 렌더링 방식이라고 생각하면 될 듯
 - 서버로부터 완전하게 만들어진 html 파일을 받아와 페이지 전체를 렌더링
 - 새로고침 현상 발생
-- 동작 방식 : 브라우저 요청 > 프론트엔드 > 백엔드(서버에서 데이터까지 모두 포함하여 페이지를 구성) > DB > 백엔드 > 프론트엔드 > 브라우자 응답 전달
+- 동작 방식 : 브라우저 요청 > 프론트엔드 > 백엔드(서버에서 데이터까지 모두 포함하여 페이지를 구성) > DB > 백엔드 > 프론트엔드 > 브라우저 응답 전달
 
   1. 장점
 
@@ -79,9 +79,11 @@ categories: Javascript NodeJS
     - 모든 페이지 컴포넌트를 감싸고 있는 공통레이아웃
     - 원하는 컴포넌트 import하면 모든 페이지 적용
     - 최초로 실행됨
+    - Server only file(클라이언트에서 사용하는 로직인 window/dom 로직 사용이 어려움)
     - 페이지 업데이트 전에 원하는 방식으로 페이지 업데이트하는 통로
     - 내부의 컴포넌트 전부 실행하고 html body로 구성
     - 실행 이후 \_document.tsx 실행
+    - 아래 기본 구성에서 props로 받은 component는 요청한 페이지. pageProps는 페이지 getInitialProps를 통해 내려 받은 props
     - 기본 구성(react 프로젝트의 App.tsx )
 
       ```
@@ -101,16 +103,28 @@ categories: Javascript NodeJS
       }
       ```
 
+      ```
+      //<Component {...pageProps} /> 의미
+      //Spread 문법 이용한 것으로 보면 됨
+      <Component pageProp1={pageProps.pageProp1} pageProp2={pageProps.pagePrp2} /> 과 동일
+      }
+
+      ```
+
   - \_document.tsx
     - html > head 하위에 meta 태그 정의 가능
+    - static html을 구성하기 위한 app.js에서 구성한 html 바디가 어떤 형태로 들어갈지 구성하는 곳
+    - content들을 브라우저가 html로 이해하도록 주조화시켜주는 곳
     - 전체 페이지에 관여하는 컴포넌트
     - 설정 안하면 디폴트 적용
     - 이곳 콘솔은 서버에서만 보임(클라이언트에서는 안보임)
     - 훅(react lifecycle api 같은거) 실행 x. static한 상황만 부여됨
+    - Server only file (클라이언트에서 사용하는 로직 window/dom 로직 사용이 어려움)
   - Layout.tsx
     - 일반적으로 Layout.tsx 만들고 \_app.tsx를 layout으로 감싸서 사용
     - 원하는 전역 페이지 요소 제어
     - Navbar, Footer 등 component 화면에 만들고 layout.tsx에 import해서 사용
+    - \_app.js, \_app.tsx 실행되며 갖춰진 content emfdms <Main> 아래에 생성된다
 
 ## 프로젝트 초기 세팅
 
@@ -138,6 +152,26 @@ categories: Javascript NodeJS
 5.  document.tsx의 getInitialProps가 있다면 실행한다. pageProps들을 받아온다.
 6.  모든 props들을 구성하고, \_app.js > page Component 순서로 rendering.
 7.  모든 Content를 구성하고 \_document.js를 실행하여 html 형태로 출력한다.
+
+- getInitialProps
+  - 웹페이지는 각 페이지마다 사전에 불러와야할 데이터들이 있음(데이터 패칭)
+  - 데이터 패칭은 CSR에서는 리액트 로직에 따라 componentDidMout / useEffect 로 컴포넌트가 마운트 되고 나서 하는 경우가 많은데, 이 과정을 서버에서 미리 처리하도록 도와주는게 getInitialProps
+  - Nextjs 9.3버전에서는 대신에 getStaticProps, getStaticPaths, getServerSideProps 사용하게 된다고 함
+  - 데이터 패칭을 서버에서 하게되면 속도가 빨라진다. (연산을 서버와 함께하고 미리 데이터 받아와 브라우저는 렌더링만 할 수 있음)
+  - 브라우저가 데이터를 가져올때까지 화면 렌더링을 null 처리하는 경우가 있는데, 이 과정이 없어지고 initial한 데이터가 들어오는 과정을 전제로 코드를 작성할 수 있다
+  - 공통된 데이터 패칭이 필요 : \_app.js에 getInitialProps를 붙임
+  - 페이지마다 다른 데이터 패칭 필요 : 페이지마다 getInitialProps를 붙임
+  - 내부 로직은 서버에서 실행(클라이언트에서 사용하는 로직 window/dom 로직 사용이 어려움)
+  - 한 페이지를 로드할 때 하나의 getInitialProps 로직만 실행
+  - \_app.js에 getinitalprops를 달면 그 하부 페이지의 getinitalprops는 실행되지 않는데 아래처럼 하면 하부 페이지의 getinitialprops 달고 pageprops 받아올 수 있음
+  - getInitialProps (appContext) >> 기본적으로 받아오는 인수 : context(ctx) rorcp
+- ctx object
+  - pathname : 현재 pathname /user?type=normal page 접속 시에는 /user
+  - query : 현재 query를 object형태로 출력 /user?type=normal page 접속 시에는 {type: 'normal'}
+  - asPath : 전체 path /user?type=normal page 접속 시에는 /user?type=normal
+  - req : HTTP request object (server only)
+  - res : HTTP response object (server only)
+  - err : Error object if any error is encountered during the rendering
 
 # Serverless Architecture
 
@@ -184,3 +218,56 @@ categories: Javascript NodeJS
    - 장점 : 비용 절약, 인프라 관리 공수 감소, 인프라 보안 신경 쓸 필요 없음. 확장성이 뛰어남(auto scaling처럼 특정 조건에서 자동 확장이라기 보다는.. 함수 호출 횟수에 따라 호출개수가 확장되니까 확장성이 뛰어나다고 하는 듯)
    - 단점 : 자원 사용 제약(웹소켓 같은건 못씀..), 제공사에 대한 의존성 높아짐. 함수는 stateless하므로 로컬 스토리지에서 데이터 read/write 불가
    - 비교적 최근에 나와서... 자료가 마니 엄슴
+
+## CSS in JS
+
+## Template Literal
+
+- 탬플릿 문자열. 백틱(`)을 써서 표현식을 넣을 수 있음
+- `test is ${test}` 이런 애들
+- Tagged Template
+
+  - 함수`` 형태로 함수 호출 가능
+  - 타입에 상관없이 function, numver, array, object 전달 및 실행 가능
+
+  ```
+     const userName = 'test';
+        const age = 10;
+        function transform(staticData, ...dynamicData){
+            console.log(staticData); //['Hi, ', ' and I am ', '']
+            console.log(dynamicData); //['test', 10]
+        }
+
+        transform`Hi, ${userName} and I am ${age}`;
+
+    //${}을 통해 함수를 넣어줬다면 함수 사용 가능
+    function sample(texts, ...fns) {
+      const mockProps = {
+          title : '안녕하세요',
+          body :  '내용입니다.'
+      };
+
+      retrun texts.reduce((result, text, i) =>
+      `${result}${text}${fns[i]? fns[i](mockProps : ''}`
+      , '');
+    }
+
+    sample `
+      제목 : ${props => props.title}
+      내용 : ${props => props.body}
+    `
+
+    실행시 function(props){
+      return props.title
+    } 함수가 전달 >> function(mockProps){
+      return mockProps.title;
+    } 실행
+  ```
+
+  - styled-component에서 이를 사용하여 컴포넌트의 props 일거옴
+
+  ```
+  const StyledDiv = styled`
+    background: ${props => props.color};
+  `; 와 같은 형태로 사용 가능
+  ```

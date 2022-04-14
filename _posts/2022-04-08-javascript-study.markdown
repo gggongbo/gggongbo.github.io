@@ -229,6 +229,20 @@ categories: Javascript NodeJS
    - 레퍼런스를 참조한 다른 객체에서 객체 변경하는 방법 > 객체를 불변객체로 만들기
    - 방법 : 1)객체의 방어적 복사(Object.assign), 2)불변객체화를 통한 객체 변경 방지(Object.freeze) 3)Immutable.js 사용
 
+6. 동치 연산자
+   1. Equality(==)
+   - 연산 전에 피연산자를 형변화해서 비교
+   ```
+   254 == '254' //true
+   ture == 1 //true
+   undefined == null //true
+   'abc' == new String('abc') //원시타입과 객체 비교인데 true
+   null = false //false
+   true == 2 // false
+   ```
+   2. Identitiy
+   - 연산 전에 피연산자를 형변화 하지 않음
+
 ## 프로토타입
 
 1. 개념
@@ -834,6 +848,67 @@ console.log(foo.staticMethod()); //type error 발생
      }
      ```
 
-```
+## 동작 원리
+
+- 관련 링크 : https://ingg.dev/js-work/
+
+1. 자바스크립트 엔진
+
+- 작업은 기본적으로 싱글 스레드로 처리
+- 단 하나의 호출 스택 사용
+- 호출 스택에 쌓인 함수나 코드를 위에서 아래로 차례차례 실행(후입선출)
+
+2. 자바스크립트 런타임
+
+- 자바스크립트 엔진 밖에서 자바스크립트에 관려
+- Web API : 브라우저 제공 API, setTimeout HTTP 요청 메소드, DOM 이벤트 등의 메소드 지원
+- Task Queue : 이벤트 발생 후 호출되어야 할 콜백 함수가 기다리는 공간. 이벤트 루프가 정한 순서대로 줄서있음. 콜백 큐
+- 이벤트 루프 : 이벤트 발생 시 호출할 콜백 함수들 관리. 호출된 콜백 함수의 실행 순서 결정
+
+3. Task Queue
+
+- 자바스크립트에서 비동기로 호출되는 함수들은 호출 스택에 쌓이지 않고 테스트 큐에 보내짐
+  ```
+  console.log("A");
+  setTimeout(function(){
+     console.log("B");
+  },0);
+  console.log("C");
+  // A C B 순으로 콘솔 출력
+  // setTimeout 함수는 인수로 받은 콜백 함수를 일정 시간이 지난후 실행하도록 예약하는 처리만 진행. 바로 그 다음 코드가 실행
+  ```
+
+4. 비동기적 자바스크립트
+
+- 비동기처리란 특정 코드가 종료되지 않았어도 대기하지 않고 다음 코드를 실행하는 자바스크립트의 특성
+- 이벤트 루프는 call stack이 비어있을 때만 task queue의 함수를 call stack 으로 가져옴
+- settimeout(function, 3000); 콜스택에 함수들이 많이 있으면 3초 후 실행이 안될 수 있음, settimeout 시간이 정확하지 않을 수 있음
+
+5. 콜백 함수
+
+- 실행 순서가 중요한 상황에서는 콜백함수를 중첩하여 사용
+- 콜백 함수는 다른 함수에 인수로 넘겨지는 함수
+- 함수의 실행이 끝나면 콜백함수 실행해주도록 요청 가능
+- 콜백 함수가 중첩되면 코드 이해가 어려워짐. 프로미스를 이용해 콜백 헬 극복 및 비동기 처리 간결한 작성 가능
+- 프로미스, sync/await 문법으로 비동기처리를 간결하게 진행 가능
 
 ```
+function first(callback) {
+   setTimeout(function(){
+      console.log("첫번째");
+      callback();
+   }, 3000);
+}
+
+function second() {
+   console.log("두번째");
+}
+
+firt(funciton(){
+   second();
+});
+
+//3초 후 첫번째 출력 그 후 두번째 출력
+```
+
+6. 프로미스

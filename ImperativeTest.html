@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<body>
+    <button id="btn">Add Highlight</button>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous">
+        //명령형 프로그래밍 이용
+        function double (arr){
+            let result = [];
+            for(let i=0; i< arr.length; i++){
+                result.push(arr[i]*2);
+            }
+            return result;
+        }
+
+        function add(arr){
+            let result = [];
+            for(let i=0; i< arr.length; i++){
+                result += arr[i];
+            }
+            return result;
+        }
+
+        $("#btn").click(function(){
+            $(this).toggleClass("highligt");
+            $(this).text() === 'Add Highligt' ? $(this).text('Remove Hightight') : $(this).text('Add Highlight');
+        });
+
+        //선언적 프로그래밍 이용
+        function double(arr){
+            return arr.map((item)=> item*2);
+        }
+        function add(arr){
+            return arr.reduce((prev, current) => prev+current,0);
+        }
+
+        <Btn onToggleHighligt={this.handleToggleHighligt} hightligt={this.state.hightligt}>
+        {this.state.buttonText}
+        </Btn>
+    </script>
+</body>
+</html>
