@@ -78,6 +78,43 @@
    1. \_app.tsx
    - nextjs 커스텀 앱 구조 + 리액트 기본 구조가 jsx 안에 포함 + styled-component에 있는 themeprovider 테그 이용
 
+```
+_app.tsx
+   <ThemeProvider theme={theme}> {/* them={them} : import한 theme 설정, them/index.ts에 export 해오는 theme을 받아옴 TheamProvider : styled-component의 wrapper component theme 속성값에는 공통적으로 정의한 color, media 객체 포함. 이를 이용해서 하위 컴포넌트에서 theme.media.mobile로 모바일 환경에서 적용해야하는 css 속성등 사용이 가능(하위 컴포넌트 미디어 쿼리에서 활용)*/}
+      <Layout>
+        <Component {...pageProps} /> {/* Component는 Layout의 하위 컴포넌트. Layout의 children 속성값에 들어가게 됨*/}
+      </Layout>
+    </ThemeProvider>
+
+Layout.tsx
+  <LayoutBlock>
+      <Head>
+        <title>Superjoin</title>
+        <meta name="description" content="Superjoin" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Navbar />
+      <MainBlock>{children}</MainBlock>
+      <Footer />
+    </LayoutBlock>
+
+>> 합치면
+<ThemeProvider>
+  <LayoutBlock>
+    <Head>
+      <title>Superjoin</title>
+      <meta name="description" content="Superjoin" />
+      <link rel="icon" href="/favicon.ico"/>
+    </Head>
+    <Navbar />
+    <MainBlock><Component {...pageProps} /><MainBlock/>
+    <Footer />
+  </LayoutBlock>
+</ThemProvider>
+
+수퍼조인 홈페이지 웹 어플리케이션의 구조
+```
+
 ## 빌드
 
 - next dev, next build, next start, next export, next deploy 등 명령어를 이용하며 next 프레임워크에서 알아서 빌드해주고 있음

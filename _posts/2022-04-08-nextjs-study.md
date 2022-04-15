@@ -124,7 +124,7 @@ categories: Javascript NodeJS
     - 일반적으로 Layout.tsx 만들고 \_app.tsx를 layout으로 감싸서 사용
     - 원하는 전역 페이지 요소 제어
     - Navbar, Footer 등 component 화면에 만들고 layout.tsx에 import해서 사용
-    - \_app.js, \_app.tsx 실행되며 갖춰진 content emfdms <Main> 아래에 생성된다
+    - \_app.js, \_app.tsx 실행되며 갖춰진 content 들은 <Main> 아래에 생성된다
 
 ## 프로젝트 초기 세팅
 
@@ -164,7 +164,7 @@ categories: Javascript NodeJS
   - 내부 로직은 서버에서 실행(클라이언트에서 사용하는 로직 window/dom 로직 사용이 어려움)
   - 한 페이지를 로드할 때 하나의 getInitialProps 로직만 실행
   - \_app.js에 getinitalprops를 달면 그 하부 페이지의 getinitalprops는 실행되지 않는데 아래처럼 하면 하부 페이지의 getinitialprops 달고 pageprops 받아올 수 있음
-  - getInitialProps (appContext) >> 기본적으로 받아오는 인수 : context(ctx) rorcp
+  - getInitialProps (appContext) >> 기본적으로 받아오는 인수 : context(ctx) 객체
 - ctx object
   - pathname : 현재 pathname /user?type=normal page 접속 시에는 /user
   - query : 현재 query를 object형태로 출력 /user?type=normal page 접속 시에는 {type: 'normal'}
@@ -193,7 +193,7 @@ categories: Javascript NodeJS
 3. PaaS(Platform as a Service) : IaaS에서 한번 더 추상화된 모델. 네트워크, 런타임까지 제공해서 애플리케이션 배포하면 바로 구동이 가능. AWS Elastic Beanstalk, Azure App Service (auto scaling, load balancing 적용 가능)
 4. BaaS, FaaS
 
-   - 서버가 있어도 서버의 존재에 대해 신경쓰지 않아도 됨. 서버 사양, 갯수, 네트위커 설정할 필요가 없음
+   - 서버가 있어도 서버의 존재에 대해 신경쓰지 않아도 됨. 서버 사양, 갯수, 네트워크 설정할 필요가 없음
    - BaaS : 데이터 저장 다른 기기에서도 접근/공유시 가능하게 하려면 백엔드 서버 필요. 데이터베이스, 소셜서비스 연동, 파일시스템을 api로 제공. 서버 이용자가 늘어나도 서버 알아서 확장됨
 
 5. BaaS 사용의 이점
@@ -208,7 +208,7 @@ categories: Javascript NodeJS
    - 가격 : 실시간 데이터베이스에 10G 가 쌓이고, 한달 전송되는 데이터의 양이 20G 정도면 데이터베이스 비용으로만 $70 가 발생
    - 복잡한 쿼리가 불가능 : Firebase는 데이터베이스가 하나의 json 객체로 구조화됨. 최대한 DB 모델 비정규화해서 사용하는게 좋음
 7. FaaS
-   - 플젝을 하나의 함수, 여러개의 함수로 쪼개서 거대하고 분산된 컴퓨팅 자워네 함수 등록, 함수 실행 횟수 및 시간 만큼 비용 내는 방식
+   - 플젝을 하나의 함수, 여러개의 함수로 쪼개서 거대하고 분산된 컴퓨팅 자원 함수 등록, 함수 실행 횟수 및 시간 만큼 비용 내는 방식
    - AWS Rambda 등 포함
    - 배치 기능 구현 가능
    - 웹 요청 처리 가능 (특정 url로 들어온 경우 작업 하도록해서 백엔드 api 구성 가능)
@@ -248,7 +248,7 @@ categories: Javascript NodeJS
       };
 
       retrun texts.reduce((result, text, i) =>
-      `${result}${text}${fns[i]? fns[i](mockProps : ''}`
+      `${result}${text}${fns[i]? fns[i](mockProps) : ''}`
       , '');
     }
 
