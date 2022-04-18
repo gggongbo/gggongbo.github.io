@@ -487,11 +487,34 @@ categories: Javascript NodeJS
   : 자신이 생성될 때의 환경
 
 4. 활용 방법
+
    1. 상태 유지
+
    - 현재 상태 기억하여 변경된 최신 상태 유지
+
    2. 전역변수의 사용 억제
+
    - 상태 변경이나 가변(mutable) 데이터를 피하고 불변성(Immutability)을 지향하는 함수형 프로그래밍에서 부수 효과(Side effect)를 최대한 억제하여 오류를 피하고 프로그램의 안정성을 높이기 위해 클로저는 적극적으로 사용된다.
+
    3. 정보의 은닉
+
+5. 특징
+
+- 클로저를 생성하면, 생성된 함수별로 클로저 환경이 생성됨
+
+```
+function makeAddFunc(x) {
+   return function add(y) {
+      return x+y;
+   }
+}
+
+const add5 = makeAddFunc(5);
+add5(1));// 6
+const add7 = makeAddFunc(7);
+add7(1));// 8. add5에 영향 주지 않음
+//생성된 add 함수 별로 클로저 환경이 생성됨
+```
 
 ## 향상된 배열 조작 기능(맵 필터 리듀스)
 
@@ -762,12 +785,134 @@ console.log(foo.staticMethod()); //type error 발생
 - 자식클래스는 프로토타입 체인에 의해 부모 클래스의 정적 메소드 참조가 가능(Classname.정적메소드(), 자식클래스 정적 메소드 내부에서 부모의 정적 메소드 호출 가능)
 - 자식클래스의 일반 메소드 내부에서는 부모 클래스의 정적 메소드를 호출할 수 없음(인스턴스의 프로토타입 체인으로 부모 클래스의 정적 메소드 참조 불가)
 
+## 화살표 함수
+
+1. 화살표 함수의 this
+
+- 가장 가까운 함수를 가리킴
+
+2. 내부 함수의 this
+
+- 내부 함수 에서 인수로 들어간 함수는 전역 환경에서 실행되며 이때 this는 window 객체를 참고(클로저를 이용해서 해결은 가능)
+
 ## 프로미스
 
 1. 개념
 
 - 비동기 처리를 위한 패턴 : 콜백 함수
 - 비동기 처리를 위한 똘다른 패턴, 전통적인 콜백 패턴이 가진 단점을 보완하며 비동기 처리 시점을 명확하게 표현할 수 있음
+- 비동기 프로그래밍을 할 때 동기 프로그래밍 방식으로 코드를 작성할 수 있다
+
+2. 상태
+
+- 대기 중, 처리됨(이행됨, 거부됨) 상태 3가지로 구분
+- 프로미스는 처리됨 상태가 되면 더 이상 다른 상태로 변경되지 않음
+
+3. 프로미스 생성
+
+- Promise.resolve 인수가 프로미스 : 객체 그대로 반환
+- Promise.resolve 인수가 프로미스X, 객체나 데이터 값 : 전달한 인수를 갖고 이행됨 상태인 프로미스가 반환
+
+```
+const p1 - new Promise((resolve, reject) => { //resolve reject라는 콜백함수 매개변수로 가짐
+   resolve(data) //비동기 작업 성공시 resolve 호출, 이행됨 상태가 됨
+   or reject('error message') //비동기 작업 실패시 reject 호출, 거부됨 상태가 됨
+});
+
+const p2 = Promise.reject('error message'); //거부됨 상태인 프로미스가 생성됨\
+const p3 = Promise.resolve(param);
+```
+
+4. then
+
+- 프로미스가 처리됨 상태가 되면 then 메소드의 인수로 전달된 함수를 호출
+- 연결된 순서대로 호출됨
+- 기존 객체 반환하지 않고 새로운 프로미스를 반환
+- function().then(onResolve, onReject); // 처리됨 상태면 onResolce, 거부됨 상태면 onReject 호출
+- then 메소드는 항상 프로미스를 반환함
+- 리턴값이 프로미스면 그대로 리턴, 프로미스 아닌 값 리턴시 이행됨 상태의 프로미스 반환
+- 인수로 전달된 함수 내부에서 예외 발생시 거부됨 상태의 프로미스 반환
+- 프로미스가 거부됨 상태인 경우에는 onreject 함수가 존재하는 then 만날때까지 이동
+- Promise.resolve(123).then(data => console.log(data)) ; // 123 출력
+
+5. catch
+
+- 프로미스 수행중 발생한 예외 처리 (then 메소드의 onReject 함수 같은 역할)
+
+Promiset.reject(1).then(null, error -> {
+console.log(error);
+});
+
+Promise.reject(1).catch(error => {
+console.log(error);
+})
+
+Promise.reolve().then(()=>{
+throw new Error('some error'); //resolve 함수에서 발생한 예외가 처리되지 않아 unhandled promise rejection 에러 발생
+},
+error => {
+console.log(error);
+}
+);
+
+//이렇게 하면 처리됨
+Promise.resolve().then(()=>{
+thrwo new Rorr('som error);
+}).catch(error=>{
+console.log(error);
+})
+
+6. finally
+
+- 프로미스 체인의 가장 마지막에 프로미스 이행 혹은 거부됨 상태일 때 호출되는 네소드
+- 이전에 사용한 프로미스를 그대로 반환함
+
+7. 활용 방법
+
+   1. Promise.all
+
+   - 여러 개의 프로미스 병렬 처리, 프로미스를 반환
+   - 입력된 모든 프로미스가 처리됨 상태가 되어야 처리됨 상태가 되고, 하나라도 거부됨 상태라면 거부됨 상태의 프로미스 반환
+
+   2. Promise.race
+
+   - 여러 개의 프로미스 중에 가장 빨리 처리된 프로미스 반환 (입력된 프로미스 중 하나라도 처리됨 상태가 되면 race에서 반환하는 프로미스도 처리됨 상태가 된다)
+
+   3. 캐싱 구현
+
+## async await
+
+- 비동기 프로그래밍을 동기 프로그래밍처럼 작성할 수 있도록 함수에 추가된 기능
+
+1. 특징
+
+   - async await 함수는 프로미스를 반환
+   - 함수 내부에서 반환하는 값이 프로미스라면 그 객체 그대로 리턴
+   - async await 함수 내부에서 예외 발생하는 경우 거부됨 상태인 프로미스가 반환
+
+2. await 키워드
+   - async await 함수 내부에서만 사용
+   - await 키워드 오른쪽에 프로미스 입력 : 프로미스가 처리됨 상태가 될때까지 기다림
+   - 두개의 프로미스 먼저 생성하고 await 키워드 나중에 사용하면 병렬 처리 가능
+   - await 함수 내부에서 발생하는 예외는 try catch 문으로 처리하는 게 좋음
+
+```
+function getDataPromise() {
+   asyncFunc1().then(data=>{console.log(data);
+   return asyncFunc2();})
+   .then(data=>{
+      console.log(data);
+   });
+}
+
+async function getDataAsync() {
+   const data1 = await asyncFunc1();
+   console.log(data1);
+   const data2 = await asyncFunc2();
+   console.log(data2);
+}
+
+```
 
 ## 구조분해할당(비구조화할당)
 
@@ -868,15 +1013,18 @@ console.log(foo.staticMethod()); //type error 발생
 3. Task Queue
 
 - 자바스크립트에서 비동기로 호출되는 함수들은 호출 스택에 쌓이지 않고 테스트 큐에 보내짐
-  ```
-  console.log("A");
-  setTimeout(function(){
-     console.log("B");
-  },0);
-  console.log("C");
-  // A C B 순으로 콘솔 출력
-  // setTimeout 함수는 인수로 받은 콜백 함수를 일정 시간이 지난후 실행하도록 예약하는 처리만 진행. 바로 그 다음 코드가 실행
-  ```
+
+````
+
+console.log("A");
+setTimeout(function(){
+console.log("B");
+},0);
+console.log("C");
+// A C B 순으로 콘솔 출력
+// setTimeout 함수는 인수로 받은 콜백 함수를 일정 시간이 지난후 실행하도록 예약하는 처리만 진행. 바로 그 다음 코드가 실행
+
+```
 
 4. 비동기적 자바스크립트
 
@@ -893,22 +1041,26 @@ console.log(foo.staticMethod()); //type error 발생
 - 프로미스, sync/await 문법으로 비동기처리를 간결하게 진행 가능
 
 ```
+
 function first(callback) {
-   setTimeout(function(){
-      console.log("첫번째");
-      callback();
-   }, 3000);
+setTimeout(function(){
+console.log("첫번째");
+callback();
+}, 3000);
 }
 
 function second() {
-   console.log("두번째");
+console.log("두번째");
 }
 
 firt(funciton(){
-   second();
+second();
 });
 
 //3초 후 첫번째 출력 그 후 두번째 출력
+
 ```
 
 6. 프로미스
+```
+````

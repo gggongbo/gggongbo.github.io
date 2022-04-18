@@ -220,6 +220,575 @@ console.log(c);
     - <Link to="path"> 지정해주면 현재 라우트/path로 자동으로 인식됨 자식 컴포넌트에서 (${match.url}/path) 지정할 피요 없음
     - useParams 메소드 가져와서 let params = useParams(); > params.:customId 로 사용할 수 있음
 
+# 3장 리액트 개념 이해
+
+## 리액트의 마운트
+
+- 컴포넌트의 첫 번째 렌더링 결과가 실제 돔에 반영된 상태
+
+```
+마운트 관련 커스텀 훅
+
+function useMount( {
+  const [mounted, setMounted] = useState(false);
+  useEffect(()=> setMounted(true), []);
+  return mounted;
+})
+```
+
+## 컴포넌트의 속성갑과 상태값
+
+- 속성값 : 해당 컴포넌트가 관리하는 데이터
+- 상태값 : 부모 컴포넌트로부터 전달받는 데이터
+- 리액트에서 UI 데이터는 반드시 상태값과 속성값으로 관리해야 한다
+- 같은 컴포넌트를 두 번 사용 > 두 개의 상태값이 따로 관리됨
+- 속성값은 불변변수, 상태값도 불변변수로 관리하면 좋음
+
+```
+let color = "red";
+function MyComponent() {
+  funciton onClick() {
+    color = 'blue';
+  }
+
+  return (
+    <button style={{backgroundColor : color}} onClick={onClick}/> // color 데이터는 변해도 버튼 ui에 반영 X
+  );
+}
+
+//useState 사용해서 ui 데이터 변경
+
+function MyComponent() {
+  const [color, setColor] = useSate('red');
+  funciton onClick() {
+    setColor = 'blue';
+  }
+
+  return (
+    <button style={{backgroundColor : color}} onClick={onClick}/> // color 데이터는 변해도 버튼 ui에 반영 X
+  );
+```
+
+## 컴포넌트 함수의 반환값
+
+- 배열 반환도 가능(요소 컴포넌트에 키 속성값 있어야 함)
+- null 또는 boolean 반환 가능 > 반환하면 아무것도 렌더링 하지 않음
+- 리액트 포털 사용 > 컴포넌트의 현재 위치와는 상관없이 특정 돔 요소에 렌더링 가능
+
+## 리액트에서 생성한 엘리먼트 변수의 속성값 분석
+
+- 타입 속성값 : 문자열이면 html 태그, 함수면 작성한 컴포넌트를 의미
+- key,ref : key,ref 속성값 작성하면 이 쪽에 들어감
+- props : key, ref를 제외한 나머지 속성값, 여기에는 하위 요소인 children 도 포함
+- 리액트 요소는 불변 객체여서 속성값 변경이 어려움
+
+## 리액트 요소가 DOM 요소로 만들어지는 과정
+
+- 데이터 변경에 의한 화면 업데이트는 렌더 단계, 커밋 단계 거침
+- 렌더 단계 : 실제 돔에 반영할 변경 사항 파악
+- 커밋 단계 : 파악된 변경 사항 실제 돔 반영
+- 리액트는 렌더링할 때마다 가상돔 만들고 이전의 가상 돔과 비교 (렌더 단계에서 진행)
+- 렌더 단계는 ReactDOM.render 함수와 상태값 변경 함수에 의해 시작
+- 실제 돔을 만들 수 있는 리액트 요소 트리를 가상 돔이라고 한다
+- 리액트 요소 트리가 실제 돔으로 만들어지려면, 모든 리액트 요소의 type 속성값이 문자열이어야 함( 함수가 하나라도 있으면 안됨)
+- 리액트16 : 리액트 요소는 파이버라는 구조체로 변환되나 type 속성값이 문자열 될 때까지 연산 진행
+
+```
+const elementTree = {
+  type : 'div',
+  props : {
+    childeren : [
+      {
+        type: 'p',
+        props: {
+          stype : {color, 'blue'},
+          children : '리액트 공부하기',
+        },
+        //...
+      },
+      {
+       type : Test
+       ....
+      }
+    ]
+  }
+}
+```
+
+## React.memo
+
+- memo 함수의 인수로 컴포넌트 입력. 컴포넌트 속성값이 변경되는 경우에만 렌더링됨
+- 렌더단계에서의 가상돔에서의 각 하위 요소 속성값을 이전의 가상돔에서의 속성값과 비교. 속성값이 달라진 요소만 렌더링 하게 됨
+
+## 리액트 훅
+
+1. 개념
+
+- 함수형 컴포넌트에 기능을 추가할 때 사용하는 함수
+- 함수형 컴포넌트에서 상태값 사용, 자식 요소 접근이 가능
+- 리액트 16.8 버전부터 추가된 기능
+
+2. useState
+
+- 상태값 추가
+- 첫번째 원소는 상태값, 두번째 원소는 상태값 변경 함수
+- 리액트에서 상태값 변경을 배치로 처리(리액트 외부에서 관리되는 이벤트 처리함수에서 상태값 변경하면 배치로 처리되지 않음)
+- 상태값 변경 함수는 비동기로 동작하지만 순서가 보장됨
+- 상태값 변경 함수의 인수를 함수로 입력 : 같은 로직을 여러 번 동작시킬 수 있음
+- 여러 개의 상태값 변경 요청을 배치로 처리
+- 클래스형 컴포넌트 setState 메소드는 기존 상태값과 새로 입력된 값을 병합, useState는 이전 상태값을 덮어 씀(스프레드 문법으로 병합 가능)
+
+```
+const [count, setCount] = useState({value:0});
+
+function onClick() {
+setCount({value:count.value+1});
+setCount({value:count.value+1}); // 이래도 한 번만 호출됨
+}
+
+function onClick() {
+setCount(prev => prev+1);
+setCount(prev => prev +1); // 두번 호출됨
+}
+```
+
+3. useEffect
+
+- 부수 효과(함수 외부에 영향 받거나 주는 것)를 처리
+- API 호출, 이벤트 처리 함수 등록/해제가 부수효과의 구체적인 예
+- 부수 효과 함수는 렌더링 결과가 실제 돔에 반영된 후 호출됨
+- 부수 효과 함수는 렌더링할때마다 호출됨. api 통신시 사용하는 경우, api 통신도 불필요하게 많이 진행. 두번째 매개변수 이용해 방지 가능
+- 두번째 매개변수로 배열 입력. 배열의 값 변경되는 경우에만 함수 호출(이때의 배열은 의존성 배열)
+- 의존성 배열이 빈 배열 : 컴포넌트가 생성될 때만 호출되고, 컴포넌트가 사라질 때만 리턴 함수 호출됨
+- 리턴하는 함수
+  - 부수효과 함수가 호출되기 직전에 호출, 컴포넌트가 사라지기 직전에 마지막으로 호출(프로그램이 비정상적으로 종료되지 않으면 반드시 호출됨)
+
+```
+import React, {useEffect, useState} from 'react';
+
+function Profile({userId}) {
+  const [user, setUser] = userState(null);
+  useEffect(
+    () => {
+      getUserApi(userId).then(data => setUser(data));
+    },
+    [userID],
+  );
+  return (
+    <div>
+    {!user &&<p>사용자 정보 가져오는 중.. </p>}
+    {user && (
+      <>
+        <p>{`name is ${user.name`}</p>
+        <p>{`age is ${user.age`}</p>
+      </>
+    )}
+    </div>
+  )
+}
+```
+
+4. 커스텀 훅
+
+- use라는 이름으로 시작하며 커스텀 훅 생성 가능
+
+5. 훅 사용 규칙
+
+- 하나의 컴포넌트에서 훅 호출하는 순서는 항상 같아야함 (각 훅 함수에서는 '배열'에 자신의 데이터를 추가하므로)
+- 훅은 함수형 컴포넌트 혹은 커스텀 훅 안에서만 호출되어야 한다
+- 이를 지켜야 각 훅의 상태를 리액트가 기억할 수 있음
+
+6. 콘텍스트 API로 데이터 전달
+
+- 컴포넌트의 중첩 구조가 복잡한 상황에서도 쉽게 데이터 전달 가능
+- React.createContext(defaultVale => {Provicer, Consumer})
+- Consumer 컴포넌트는 데이터를 찾기 위해 상위로 올라가면서 가장 가까운 Provider 컴포넌트를 찾음. 최상위까지 못찾으면 기본값 사용
+- Provider 컴포넌트의 속성값 변경되면 모든 Consumer 컴포넌트는 다시 렌더링 됨
+- 중간 컴포넌트의 ₩렌더링 여부와 상관없이 하위 컴포넌트 렌더링 보장됨
+- 하위 컴포넌트에서 콘텍스트 데이터 수정 가능(상위에서 set같은 함수를 전달해주면 됨)
+- 콘텍스트 데이터로 객체 {{객체명}} 전달하는 경우 컴포넌트 렌더링 시 새로운 객체 생성됨 (콘텍스트 데이터를 객체의 상태값으로 관리하면 막을 수 있음)
+- <UserContext.Provider></UserContext.Provider> 밖에 하위 컴포넌트가 있으면 provider 컴포넌트를 못찾게 됨..
+
+```
+//콘텍스트 api 미사용
+function App() {
+  return (
+    <div>
+      <div>상단 메뉴</div>
+      <Profile username="mike">
+      <div>하단 메뉴</div>
+    </div>
+  )
+}
+
+function Profile({username}){
+  return (
+    <div>
+      <Greeting username={username} />
+    </div>
+  )
+}
+
+funciton Greeting({username}){
+  return <p>{`${username}님 안녕하세요`}</p>;
+}
+
+//사용
+const UserContext = React.createContext(''); //콘텍스트 객체 생성
+
+function App() {
+  return (
+    <div>
+      <UserContext.Provide value="mike"> //상위 컴포넌트에서 데이터 전달
+      <div>상단 메뉴</div>
+      <Profile/>
+      <div>하단 메뉴</div>
+      <UserContext.Provide value="mike">
+    </div>
+  )
+}
+
+function Profile() {
+  return (
+    <div>
+      <Greeting />
+    </div>
+  );
+}
+
+function Greeting() {
+  return (
+    <UserContext.Consumer> //하위 컴포넌트에서는 데이터 사용
+      {username => <p>`${username}님 안녕하세요`}></p>}
+    <UserContext.Consumer>
+  )
+}
+```
+
+7. ref 속성값으로 자식 요소 접근
+
+- ref 속성값으로 자식 요소 직접 접근 가능
+- useRef 훅이 반환하는 ref 객체로 자식 요소 접근이 가능
+- ref 객체의 current 속성을 이용하면 자식 요소 접근 가능
+- 클래스형 컴포넌트의 ref.current : 해당 컴포넌트의 인스턴스를 가리킴
+- forwardRef : ref 속성값 직접 처리 가능, 부모 컴포넌트에서 넘어온 속성값 직접 처리 가능
+- ref 속성값으로 함수를 입력하면 컴포넌트가 렌더링될때마다 새로운 함수를 ref 속성값으로 넣어주게됨(useCallback 훅을 이용해 해결 가능)
+- 컴포넌트 생성 이후에도 ref 객체의 current 속성이 없을 수 있으니 주의 필요
+
+  ```
+  function TextInput({imputRef}) {
+    return (
+      <div>
+        <input type="text" ref={inputRef} />
+        <button>저장</button>
+      </div>
+    );
+  }
+
+  function Form() {
+    const inputRef = useRef();
+    useEffect(() => {
+      inputRef.current.focus();
+    }, []);
+    return (
+      <div>
+        <TextInput inputRef={imputRef}/>
+        <button onClick={()=>inputRef.current.focus()}>텍스트로 이동</button>
+      </div>
+    )
+  }
+
+  const TextInput = React.forwardRef((props, ref) => (
+    <div>
+      <input type="text" ref={ref} /> //예약어 사용 가능
+      <button>저장</button>
+    </div>
+  ));
+
+    function Form() {
+    const inputRef = useRef();
+    useEffect(() => {
+      inputRef.current.focus();
+    }, []);
+    return (
+      <div>
+        <TextInput ref={imputRef}/>
+        <button onClick={()=>inputRef.current.focus()}>텍스트로 이동</button>
+      </div>
+    )
+  }
+  ```
+
+8. useContext
+
+- Consumer 컴포넌트를 사용하지 않고도 부모 컴포넌트로부터 전달된 컨텍스트 데이터 사용 가능
+
+```
+const UserContext = React.createContext(); //콘텍스트 객체 생성
+const user = {name: 'mike', age: 23};
+
+function App() {
+  return (
+    <div>
+      <UserContext.Provide value="user"> //상위 컴포넌트에서 데이터 전달
+      <ChildComponent />
+      <UserContext.Provide value="mike">
+    </div>
+  )
+}
+
+function ChildComponent() {
+  cont user = useContext(UserContext);
+  return(
+    <div>
+      <p>{`user: ${user.name}, ${user.age}`}</p>
+    </div>
+  )
+}
+```
+
+9. useRef
+
+- 자식 요소 접근, 렌더링과 무관한 값 저장시에도 사용
+
+```
+//이전 상태값 저장하기
+import React, {useState, useRef, useEffect} from 'react';
+
+funciton Profile() {
+  const [age, setAge] = useState(20);
+  const prevAgeRef = useRef(220);
+  useEffect(
+    () => {
+      prevAgeRef.current = age;
+    }
+  ,[age])
+};
+
+const prevAge = prevAgeRef.current;
+const text = age === prevAge ? 'same' : 'age > prveAge ? 'older' : 'younger';
+return (
+  <div>
+    <p>{`age ${age} is ${text} then age ${prevAge}`}</p>
+    <button
+      onClick={()=> {
+        const age = Math.flooer(Math.random()*50+1)'
+        setAge(age);
+      }}
+    >나이 변경</button>
+  </div>
+)
+```
+
+10. useMemo, useCallback
+
+- 이전 값을 기억해서 성능을 최적화
+
+1. useMemo
+
+- 계산량이 많은 함수의 반환값을 재활용
+- useMemo(param1, param2)
+- param1은 반환값을 기억하고픈 함수/객체
+- param2는 의존성 배열(배열에 지정된 값 변경X>이전 반환값 재사용. 배열 값 변경> param1로 입력된 함수 실행, 반환값 기억)
+
+  ```
+  import React, {useMemo} from 'react';
+  import {runExpensiveJob} from './util';
+
+  function MyComponent({v1, v2}) {
+    const value = useMemo(()=> runExpensiveJob(v1,v2), [v1,v2]); /
+    return <p>{`value is ${value}`}</p>;
+  }
+  ```
+
+2.  useCallback
+
+- 리액트의 렌더링 성능을 위해 제곧외는 훅
+- 속성값 변경이 불필요한 렌더링 발생시킬 수 있음
+- ram1은 반환값을 기억하고픈 함수/객체
+- param2는 의존성 배열(배열에 지정된 값 변경X>이전 생성 함수 재사용)
+
+```
+import React, {useState} from 'react';
+import {saveToServer} from './api';
+import UserEdit from './UserEdit';
+
+function Profile() {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0);
+  return (
+    <div>
+      <p>{`name is ${name}`}</p>
+      <p>{`age is ${age}`}</p>
+      <UserEdit
+        onSave={() => saveToServer(name, age)} //useMemo를 사용해도 속성값이 항상 변경되어 렌더링 발생
+        setName={setName}
+        setAge={setAge}
+      >
+    </div>
+  )
+}
+
+//useCallback
+function Profile() {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0);
+  return (
+    <div>
+      <p>{`name is ${name}`}</p>
+      <p>{`age is ${age}`}</p>
+      <UserEdit
+        onSave={() => saveToServer(name, age)} //useMemo를 사용해도 속성값이 항상 변경되어 렌더링 발생
+        setName={setName}
+        setAge={setAge}
+      >
+    </div>
+  );
+}
+
+function Profile() {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0)'
+  const onSave = useCallback(()=> saveToServer(name,age), [name,age]); //name, age 변경되지 않으면 onSave 속성값에 항상 같은 함수 전달
+  return (
+    <div>
+      <p>{`name is ${name}`}</p>
+      <p>{`age is ${age}`}</p>
+      <UserEdit onSave={onSave} setName={setName} setAge={setAge}
+      >
+    </div>
+  )
+
+}
+```
+
+11. useReducer
+
+- 컴포넌트 상태값을 리덕스 리듀서처럼 관리 가능
+- 매개변수로 리듀서 함수, 초기 상태값 입력
+- useReduce 훅은 상태값, dispatch 함수를 차례대로 반환함(리덕스의 디스패치 함수와 같은 방식으로 사용)
+- 트리의 깊은 곳으로 이벤트 처리 함수 전달 가능
+- useReducer 훅의 dispatch 함수는 값이 변하지 않는 특징이 있음. 콘텍스트의 consumer 컴포넌트가 불필요하게 자주 렌더링되지 않음
+
+```
+import React, {useReducer} from 'react';
+
+const INITIAL_STATE = {name:'empty, age:0};
+function reducer(state, action) {
+  switch(action, type) {
+    case 'setName':
+    return { ...state, name:action.name};
+    case 'setAge' :
+    return {...state, age:action.age};
+    defautl :
+    return state;
+  }
+}
+
+function Profile() {
+  const [state, dispatch] = useReducer(reducer, INIITIAL_STATE);
+  return(
+    <div>
+      <p>{`name is ${state.name}`}</p>
+      <p>{`age is ${state.age}`}</p>
+      <input
+      type="text
+      value={state.name}
+      onChange={e=>dispatch({type:'setName', name: e.currentTarget.value})
+      }
+      />
+      <input
+      type="numver"
+      value={state.age}
+      onChange={e=> dispatch({type:'setAge', age: e.currentTarget.value})}
+      />
+      </div>
+  );
+}
+
+//콘텍스트 api 같이 활용
+
+export const ProfileDispatch = React.createContext(null);
+
+function Profile() {
+const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+return (
+
+<div>
+<p>{`name is ${state.name}`}</p>
+<p>{`age is ${state.age}`}</p>
+<ProfileDispatch.Provider value={dispatch}>
+<SomeComponent> // 하위 컴포넌트에서 dispatch 함수 호출이 가능해짐
+</ProfileDispatch.Provider>
+</div>
+)
+}
+```
+
+12. useImperativeHandle
+
+- 부모 컴포넌트에는 ref 객체 통해 클래스형 자식 컴포넌트의 메소드 호출 가능
+- 이를 함수형 자식 컴포넌트에서도 이용할 수 있게 하는 훅
+
+```
+import React, {forwardRef, useState, useImperativeHandle} from 'react';
+
+function Profile(props, ref) {
+  const [name, setName] = useState('');
+  const [age, setAge] = useState(0);
+
+  useImperativeHandle(ref, ()=>({
+    addAge: vale => setAge(age+value);
+    getNameLength: () => name.length,
+  }));
+
+  return (
+    <div>
+     <p>{`name is ${name}`}</p>
+      <p>{`age is ${age`}</p>
+    </div>
+  )
+}
+
+export default forwardRef(Profile); // 부모 컴포넌트에서 입력한 ref 객체 직접 처리를 위해 forwardRef 호출
+// useImperativeHandle 훅으로 ref 객체, 부모에서 접근 가능한 함수 입력
+
+function Parent() {
+  const profileRef = useRef();
+  const onClick = () => {
+    if(profileRef.current){
+      console.log('current name length:', profileRef.current.getNameLength());
+      profileRef.current.addAge(5);
+    }
+  };
+
+  return (
+    <div>
+      <Profile ref={profileRef} />
+      <button onClick={onClick}>add age 5 </bu tton>
+    </div>
+  )
+}
+```
+
+13. useLayoutEffect
+
+- useEffect 훅에 입력된 부수 효과 함수 : 렌더링 결과 돔에 반영된 후 비동기로 호출
+- useLayoutEffect는 부수효과 함수를 동기로 호출. 렌더링 결과가 돔에 반영된 직후에 동기로 호출. 많이 사용하면 성능 이슈 유발 가능
+
+14. useDebugValue
+
+- 커스텀 훅의 내부 상태 관찰 가능
+
+```
+  function useToggle(initialValue) {
+    const [value, setValue] = useState(intialValue);
+    const onToggle = () => setValue(!value);
+    useDebugValue(value? 'on : 'off'); //디버깅시 확인할 값
+    relturn [value, onToggle];
+  }
+```
+
 # 8장 서버 사이드 렌더링 & 넥스트
 
 ## CRA와 넥스트의 차이
@@ -273,13 +842,16 @@ console.log(c);
 - 이후 클라이언트에서 페이지 전환을 하면 클라이언트에서 함수 호출
 - 반환하는 값은 페이지 컴포넌트의 속성값으로 입력됨
 - getInitialProps 함수는 서버에서 호출되며 이 함수를 통한 데이터의 전달은 넥스트의 큰 장점
-  ```
-  myComponent.getInitialProps = async({req}) => {
-    const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
-  }
-  //http 요청 객체도 매개변수로 전달됨. http 요청과 응답 객체는 getInitialProps 함수가 서버에소 호출되는 경우에만 전달
-  //헤더에서 user-agent 정보를 추출, getInitialProps가 호출되지 않아 req가 빈 상태(클라이언트에서 호출)라면 브라우저의 navigator 전역 변수 이용
-  ```
+
+```
+
+myComponent.getInitialProps = async({req}) => {
+const userAgent = req ? req.headers['user-agent'] : navigator.userAgent;
+}
+//http 요청 객체도 매개변수로 전달됨. http 요청과 응답 객체는 getInitialProps 함수가 서버에소 호출되는 경우에만 전달
+//헤더에서 user-agent 정보를 추출, getInitialProps가 호출되지 않아 req가 빈 상태(클라이언트에서 호출)라면 브라우저의 navigator 전역 변수 이용
+
+```
 
 ## 페이지 이동
 
@@ -297,14 +869,14 @@ console.log(c);
 ## 페이지 공통 기능 구현
 
 - \_app.js의 MyApp 컴포넌트
-  - 페이지가 전환되어도 언마운트되지 않음. 항상 유지되어야 하는 컴포넌트들 여기에 선언되어있음
-  - MyApp 컴포넌트에서 전역 상태값 관리 가능
+- 페이지가 전환되어도 언마운트되지 않음. 항상 유지되어야 하는 컴포넌트들 여기에 선언되어있음
+- MyApp 컴포넌트에서 전역 상태값 관리 가능
 
 ## 코드 분할
 
 - 넥스트는 기본적으로 페이지 별 번들 파일 생성
 - 동적 임포트 사용 시에는 해당 모듈의 코드는 별도 파일로 분할
-  - 테스트시 916.js 라는 형식으로 별도 번들 파일 생성, 클라이언트 뿐만 아니라 서버를 위한 파일도 생성됨
+- 테스트시 916.js 라는 형식으로 별도 번들 파일 생성, 클라이언트 뿐만 아니라 서버를 위한 파일도 생성됨
 - 여러 페이지에 공통 사용 모듈도 별도 파일로 분리됨
 
 ## 여러 페이지에 공통으로 사용되는 코드 분할
@@ -324,16 +896,16 @@ console.log(c);
 - 넥스트에서 빌드시 getInitialProps 함수가 없는 페이지는 자동으로 미리 렌더링됨(getInitial 함수는 꼭 필요한 경우에만 작성하는게 좋음 >> next 12 환경은 조금 다른 것 같음
 - \_app.js 파일에서 getInitialProps 함수를 정의하면 모든 페이지가 미리 렌더링되지 않음
 - next export : 전체 페이지 미리 렌더링. 빌드 후에 실행해야함
-  - 실행하면 루트 경로에 out 폴더 생성
-  - 404.html : 에러 페이지 미리 렌더링
-  - page.html : /page 요청에 대해 미리 렌더링
-  - 404.html.html
-  - \_next : next 빌드 후 생성되는 폴더인 .next 폴더에 있는 번들 파일과 같음
-  - static : 이미지와 같은 정적 파일 모아 놓음
-    - icon.png
+- 실행하면 루트 경로에 out 폴더 생성
+- 404.html : 에러 페이지 미리 렌더링
+- page.html : /page 요청에 대해 미리 렌더링
+- 404.html.html
+- \_next : next 빌드 후 생성되는 폴더인 .next 폴더에 있는 번들 파일과 같음
+- static : 이미지와 같은 정적 파일 모아 놓음
+  - icon.png
 - export 명령어 실행후 생성된 out 폴더만 있으면 서버에서 넥스트를 실행하지 않아도 정적 페이지 서비스 가능
-  - 이때 서버주소/페이지.html로 접근해야 접근 가능
-  - 서버 클린 url 설정하면 제어 가능
+- 이때 서버주소/페이지.html로 접근해야 접근 가능
+- 서버 클린 url 설정하면 제어 가능
 - node.config.js > exportPathMap 쿼리 파라미터를 활용해서 정적 페이지를 만들 수 있음
 - next export 시 exportPathMap 옵션 사용
 - 'page':{page:'page'} 로 설정하면 서버주소/page.html로 접속해야만 페이지 보여짐
@@ -351,3 +923,7 @@ console.log(c);
 - 이때 서버, 클라이언트에서 생성하는 styled-component 해시값이 달라져 문제 발생
 - styled-components babel-plugin-styled-components 로 해결 가능
 - babelrc presets, plugin 설정 하여 해결 가능
+
+```
+
+```
